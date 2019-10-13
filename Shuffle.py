@@ -10,8 +10,8 @@ UNLABELLED = -1
 try:
     import os, sys
     os.chdir(sys.argv[1])
-    if len(sys.argv[1:])>0:
-        exec(''.join(sys.argv[1:]))
+    if len(sys.argv[2:])>0:
+        exec(''.join(sys.argv[2:]))
 except IndexError:
     print("usage:")
     print("'python "+sys.argv[0]+" <folder_containing_RawData.csv>/'")
@@ -35,7 +35,7 @@ def shuffle(df, category_col=3):
     s = set(df[category_col])
     s.discard('')
     l = list(s)
-    l.sort()
+    l.sort() #N.B. must sort the list after converting it from the set, as sets are unordered, and changes everytime.
     for i in l:
         matching_in_shuffled_list = df_first_shuffle[ df_first_shuffle[category_col]==i ]
         matching_indices_in_shuffled_order = matching_in_shuffled_list.index.tolist()

@@ -6,17 +6,18 @@ UNLABELLED = -1
 try:
     import os, sys
     os.chdir(sys.argv[1])
-    if len(sys.argv[1:])>0:
-        exec(''.join(sys.argv[1:]))
+    if len(sys.argv[2:])>0:
+        exec(''.join(sys.argv[2:]))
 except IndexError:
     print("usage:")
     print("'python "+sys.argv[0]+" <folder_containing_RawData.csv>/'")
     exit()
 try:
-    tr_frame = pd.read_csv("train_data.csv", header=None).fillna('')
-    te_frame = pd.read_csv("test_data.csv", header=None).fillna('')
+    tr_frame = pd.read_csv("train_data.csv", header=None, index_col=0).fillna('')
+    te_frame = pd.read_csv("test_data.csv", header=None, index_col=0).fillna('')
 except FileNotFoundError:
-    print("Please preprocess that directory with 'Embed.py' first.")
+    print("Please preprocess that directory with 'Shuffle.py' first;")
+    print("Or, alternatively, save the 'train_data.csv' and 'test_data.csv' directly.")
     exit()
 
 def get_unique_words(descriptions):
@@ -102,6 +103,7 @@ save_conversion_dict(list_of_set_of_category)
 #save dataframe with only embedding
 frames = {'tr':tr_frame, 'te':te_frame}
 train_test_feature_label = {}
+
 for t in ('tr', 'te'):
     embedding_representation = convert2embedding(hybrid_data, uniquewords)
     category_integer_representation = convert2integerrepresentation(frames[t][3], list_of_set_of_category)
