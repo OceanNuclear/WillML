@@ -1,8 +1,10 @@
 from numpy import cos, arccos, sin, arctan, tan, pi, sqrt; from numpy import array as ary; import numpy as np; tau = 2*pi
 import pandas as pd
 import pickle
+import time
 
 UNLABELLED = -1
+start_time = time.time()
 try:
     import os, sys
     os.chdir(sys.argv[1])
@@ -68,22 +70,8 @@ def convert2integerrepresentation(pdseries, category_list):
         new_series.update({index:integer_requried})
     return pd.Series(new_series)
 
-def convert2onehot(pdseries):
-    s = set(pdseries)
-    s.discard(UNLABELLED)
-    all_categories = list(s) # using the integer representation, stored in 'category_conversion.pkl', as the column names.
-    all_categories.sort()
-    series = list(pdseries)
-    onehot_result = np.zeros((len(series),len(all_categories)))
-    for i in range(len(series)):
-        try:
-            onehot_result[i][all_categories.index(series[i])]+=1
-        except ValueError: 
-            assert series[i]==UNLABELLED, "This entry has not been labelled with a member of the set of accepted categrories; but it isn't labelled with the integer representation -1 to indicate that it was UNLABELLED to begin with either; so something is wrong."
-    onehot_result = pd.DataFrame(onehot_result, index=pdseries.index, columns=all_categories)
-    return onehot_result #return a DataFrame
 
-def split2columns(pdseries):
+def splitin2columns(pdseries): #expand vectors stored in a single pdseries (i.e. in a single column) into suitable number of columns
     assert type(pdseries) == pd.core.series.Series, "only accept a single column (pd.Series) object"
     new_df = []
     for vector in pdseries:
@@ -91,32 +79,35 @@ def split2columns(pdseries):
     new_df = pd.DataFrame(new_df, index = pdseries.index, columns = [ i for i in range(len(vector)) ])
     return new_df #return another DataFrame
 
-#do the embedding conversion
-hybrid_data = tr_frame[1]+" "+ tr_frame[2]#combine column 1 (description) and 2 (class)
-uniquewords = get_unique_words(hybrid_data) #combine the "description" with "class" to get the hybrid embedding
+#turn the dataframes into dictionary for ease of iteration.
+frames = {'tr':tr_frame, 'te':te_frame}
 
-save_inversion_dict(uniquewords, data="description_and_class")
-save_conversion_dict(uniquewords, data="description_and_class")
+#do the embedding conversion
+hybrid_data = {} #combined text from column 1 (description) and 2 (class)
+hybrid_data.update({"tr" : tr_frame[1]+" "+ tr_frame[2]})
+hybrid_data.update({"te" : te_frame[1]+" "+ te_frame[2]})
+uniquewords_tr = get_unique_words(hybrid_data["tr"]) #Use all of the words that appeared in the training set as features.
+#save embedding conversion and inversion
+save_inversion_dict(uniquewords_tr, data="description_and_class")
+save_conversion_dict(uniquewords_tr, data="description_and_class")
+
+#convert all categories into numerical representations.
 list_of_set_of_category = get_set_of_categroies(tr_frame[3])
+maxlen = len(list_of_set_of_category)
+#save
 save_inversion_dict(list_of_set_of_category)
 save_conversion_dict(list_of_set_of_category)
 
-#save dataframe with only embedding
-frames = {'tr':tr_frame, 'te':te_frame}
+#populate the dataframes
 train_test_feature_label = {}
-
+print("Starting the conversion, please be patient as it can take up to 1 minute.")
 for t in ('tr', 'te'):
-    embedding_representation = convert2embedding(hybrid_data, uniquewords)
-    category_integer_representation = convert2integerrepresentation(frames[t][3], list_of_set_of_category)
-    # preprocessed_data = pd.DataFrame({'feature':embedding_representation,'label':category_integer_representation})
-    train_test_feature_label.update({t+'fea':split2columns(embedding_representation)})
-    train_test_feature_label.update({t+'lab':convert2onehot(category_integer_representation)})
-
-#   train_test_feature_label = {'trfea': ,
-                                # 'trlab': ,
-                                # 'tefea': ,
-                                # 'telab': ,
-                                # }
+    embedding_representation = convert2embedding(hybrid_data[t], uniquewords_tr)
+    print("Embedding complete for {0}fea,        program run time so far = {1}".format(t, time.time()-start_time))
+    category_sparse_rep = convert2integerrepresentation(frames[t][3], list_of_set_of_category)
+    train_test_feature_label.update({t+'fea':splitin2columns(embedding_representation)})
+    print("Sparse embedding for {0}lab complete, program run time so far = {1}".format(t, time.time()-start_time))
+    train_test_feature_label.update({t+'lab':category_sparse_rep})
 
 for k,v in train_test_feature_label.items():
     with open(k+'.pkl', 'wb') as f:

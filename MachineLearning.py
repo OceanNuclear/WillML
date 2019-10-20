@@ -30,10 +30,30 @@ from sklearn.naive_bayes import MultinomialNB
 
 from sklearn.model_selection import cross_val_score
 
-random_forest = RandomForestClassifier(n_estimators=200, max_depth=3),
-svm           = LinearSVC(),
-naive_bayes   = MultinomialNB(),
-logreg        = LogisticRegression(random_state = 0),
+random_forest = RandomForestClassifier(n_estimators=1000, max_depth=15) #max_depth=5 #yields the same result
+svm           = LinearSVC()
+naive_bayes   = MultinomialNB()
+logreg        = LogisticRegression(random_state = 0, multi_class='auto', solver='newton-cg')
+
+# random_forest.fit(trfea, trlab)
+# print("random_forest obtained a score of", random_forest.score(tefea, telab))
+# #(n_estimators=200, max_depth=5)  -> 0.4595119245701608
+# #(n_estimators=200, max_depth=10) -> 0.704104
+# #(n_estimators=200, max_depth=12) -> 0.7444536882972823
+# #(n_estimators=1000, max_depth=15)-> 0.7827232390460344
+
+# naive_bayes.fit(trfea, trlab)
+# print("naive_bayes obtained a score of", naive_bayes.score(tefea, telab))
+
+svm.fit(trfea, trlab)
+print("svm obtained a score of", svm.score(tefea, telab))
+logreg.fit(trfea, trlab)
+print("logreg obtained a score of", logreg.score(tefea, telab))
+
+ linsvm_conf = svm.decision_function(tefea)
+ logsvm_conf = logreg.decision_function(tefea)
+#lbfgs      -> 
+#newton-cg  -> 0.947310038824182
 
 '''
 import tensorflow as tf
