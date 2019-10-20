@@ -11,7 +11,7 @@ try:
 except IndexError:
     print("usage:")
     print("'python "+sys.argv[0]+" <folder_containing_RawData.csv>/'")
-    exit()
+    sys.exit()
 try:
     tr_frame = pd.read_csv("train_data.csv", header=None, index_col=0).fillna('')
     te_frame = pd.read_csv("test_data.csv", header=None, index_col=0).fillna('')
@@ -51,7 +51,7 @@ def get_set_of_categroies(pdseries):
 def convert2embedding(pdseries, uniquewords_list):
     new_series = {}
     for index,row in pdseries.iteritems():
-        row=row.lower()
+        row=row.lower().split(" ")
         #use number of occurance instead of boolean
         new_series.update({index : [row.count(word) for word in uniquewords_list]})
     return pd.Series(new_series)
