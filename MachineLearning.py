@@ -1,12 +1,7 @@
 import numpy as np
 import pandas as pd
-
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers, activations
 import time
 from shutil import get_terminal_size
-# from neuralnetworklibrary import NeuralNetwork
 
 #cd into the directory to be operated on.
 try:
@@ -27,14 +22,25 @@ try:
 except FileNotFoundError:
     print("Please cut up the data with 'Embed.py' first.")
     exit()
+
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestCalssifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.naive_bayes import MultinomialNB
 
 from sklearn.model_selection import cross_val_score
 
+random_forest = RandomForestClassifier(n_estimators=200, max_depth=3),
+svm           = LinearSVC(),
+naive_bayes   = MultinomialNB(),
+logreg        = LogisticRegression(random_state = 0),
+
 '''
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers, activations
 tf.random.set_random_seed(0)
+
 # neural_network_structure = []
 hyperparamteres             ={
                              'activaiton function' : activations.softmax,
