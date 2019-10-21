@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
-import time
-from shutil import get_terminal_size
+import pickle
+
+UNLABELLED = -1
+LOGSVM = False
 
 #cd into the directory to be operated on.
 try:
@@ -46,12 +48,27 @@ logreg        = LogisticRegression(random_state = 0, multi_class='auto', solver=
 # print("naive_bayes obtained a score of", naive_bayes.score(tefea, telab))
 
 svm.fit(trfea, trlab)
-print("svm obtained a score of", svm.score(tefea, telab))
-logreg.fit(trfea, trlab)
-print("logreg obtained a score of", logreg.score(tefea, telab))
+#remove the unlablled telab cases
+missing_entries = telab==UNLABELLED
 
- linsvm_conf = svm.decision_function(tefea)
- logsvm_conf = logreg.decision_function(tefea)
+if sum(~missing_entries) >0:
+    print("linear svm (SVC) obtained an accuracy of {0} on the test set.".format(svm.score(tefea[~missing_entries], telab[~missing_entries])))
+if LOGSVM:
+    logreg.fit(trfea, trlab)
+    if sum(~missing_entries) >0:
+        print("logistic regression obtained an accuracy of {0} on the test set.".format(logreg.score(tefea[~missing_entries], telab[~missing_entries])))
+
+linsvm_pred = svm.decision_function(tefea)
+linsvm_pred = pd.DataFrame(linsvm_pred, index=telab.index)
+if LOGSVM:
+    logsvm_pred = logreg.decision_function(tefea)
+    logsvm_pred = pd.DataFrame(logsvm_pred, index=telab.index)
+
+with open('linsvm_pred.pkl', 'wb') as f:
+    pickle.dump(linsvm_pred, f)
+if LOGSVM:
+    with open('logsvm_pred.pkl', 'wb') as f:
+        pickle.dump(logsvm_pred, f)
 #lbfgs      -> 
 #newton-cg  -> 0.947310038824182
 

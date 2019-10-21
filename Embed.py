@@ -4,6 +4,7 @@ import pickle
 import time
 
 UNLABELLED = -1
+EMBED_BY_COUNTING = True
 start_time = time.time()
 try:
     import os, sys
@@ -18,10 +19,14 @@ except IndexError:
 try:
     tr_frame = pd.read_csv("train_data.csv", header=None, index_col=0).fillna('')
     te_frame = pd.read_csv("test_data.csv", header=None, index_col=0).fillna('')
+    if not 3 in te_frame.columns: #if column 3 is entirely unfilled:
+        te_frame[3]=''
 except FileNotFoundError:
     print("Please preprocess that directory with 'Shuffle.py' first;")
     print("Or, alternatively, save the 'train_data.csv' and 'test_data.csv' directly.")
     exit()
+
+EMBED_BY_PRESENCE = not EMBED_BY_COUNTING
 
 def get_unique_words(descriptions):
     allwords = " ".join(list(descriptions))   #join them into a single string
@@ -53,10 +58,15 @@ def get_set_of_categroies(pdseries):
 
 def convert2embedding(pdseries, uniquewords_list):
     new_series = {}
-    for index,row in pdseries.iteritems():
-        row=row.lower().split(" ")
-        #use number of occurance instead of boolean
-        new_series.update({index : [row.count(word) for word in uniquewords_list]})
+    if EMBED_BY_COUNTING:
+        for index,row in pdseries.iteritems():
+            row=row.lower().split(" ")
+            #use number of occurance instead of boolean
+            new_series.update({index : [row.count(word) for word in uniquewords_list]})
+    elif EMBED_BY_PRESENCE:
+        for index,row in pdseries.iteritems():
+            row=row.lower().split(" ")
+            new_series.update({index : [1 if word in row else 0 for word in uniquewords_list ]})
     return pd.Series(new_series)
 
 def convert2integerrepresentation(pdseries, category_list):
