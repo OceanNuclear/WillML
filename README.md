@@ -2,6 +2,11 @@
 Input: a labelled training set, and a partially/entirely unabelled testing set.
 Output: the two most likely categories that the items will fall into, along with the likelihood values.
 
+## Spreadsheet (CSV) format
+Column 0 (A) is the item index. Column 1 and 2 (B-C) are the item description. Column D is the category, which must be partially filled for the ```RawData.csv``` or totally filled for ```train_data.csv``` (see step 1 and 2 of [the section below](#Usage))
+
+DO NOT put a header (title) row.
+
 ## Usage
 Create a directory: e.g. ```1/```
 Store, in that directory, either
