@@ -1,3 +1,6 @@
-1/
-2/
+1/*.pkl
+1/*_data.csv
+1/output.csv
+2/*.pkl
+2/output.csv
 HiddenAway/
