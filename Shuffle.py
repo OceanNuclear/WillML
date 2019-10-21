@@ -3,8 +3,8 @@ import pandas as pd
 import pickle
 
 TRAIN_FRAC = 0.5
-SHUFFLE_SEED = 0
 TRAIN_THRES = 1
+SHUFFLE_SEED = 0
 UNLABELLED = -1
 
 try:
