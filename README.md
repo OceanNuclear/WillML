@@ -47,6 +47,6 @@ After all these steps, a lot of \*.pkl files will be saved in the directory. Don
 This program "learns" to associate words with categories.
 E.g. The entry ```Element Jaywalker backpack in black``` will be broken down into 5 words, ```Element``` ```Jaywalker``` ```backpack``` ```in``` ```black```; and this entry has the category label ```backpack```. The will associate the category ```backpack``` to these 5 words.
 
-This process is repeated once for each of the ```train_data.csv``` entry, strengthening/deminishing the association between occurance of words and the category label.
+This process is repeated once for each of the ```train_data.csv``` entry, strengthening/deminishing the association between occurance of words and the category labels.
 
 E.g. if word ```bracelet``` only appeared once in the entire ```train_data.csv``` and that entry is given the category label ```Jewellery```, then when a new unlabelled entry with only the word ```bracelet``` in its name appears, the program will with give this entry the category label ```Jewellry``` with a very high confidence score.
