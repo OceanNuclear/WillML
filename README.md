@@ -34,4 +34,3 @@ The program is written in such a way that ensures all unlabelled data falls with
 After all these steps, a lot of \*.pkl files will be saved in the directory. Don't worry, you can delete them all. They are merely python variables, stored as ```.pkl``` objects.
 
 ## Explanation
-Will explain the maths in a bit. Just know that it works right now.
